@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: book-search-engine-server
+    env: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: book-search-engine-db
+          property: connectionString
+      - key: JWT_SECRET
+        value: <your-secret-key>
+    region: us
+
+  - type: web
+    name: book-search-engine-client
+    env: static
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/build
+    envVars:
+      - key: REACT_APP_GRAPHQL_ENDPOINT
+        value: https://<your-server-service>.onrender.com/graphql
+    region: us
+
+databases:
+  - name: book-search-engine-db
+    plan: free
